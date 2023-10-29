@@ -151,4 +151,38 @@ export class AuthService {
 
     throw new BadRequestException("Invalid email or password");
   }
+
+  async refreshToken(user: User, refreshToken: string) {
+    const payload = this.createJWTPayload(user);
+
+    const { accessToken } = await this.generateJWTTokens(payload);
+
+    const userToken = await this.prismaService.userTokens.findFirst({
+      where: {
+        userId: user.id,
+        refreshToken,
+      },
+    });
+
+    if (!userToken) {
+      throw new BadRequestException("Unable to refresh token");
+    }
+
+    await this.prismaService.userTokens.update({
+      where: {
+        id: userToken.id,
+      },
+      data: {
+        accessToken,
+      },
+    });
+
+    return { accessToken };
+  }
+
+  async signOut(refreshToken: string) {
+    await this.prismaService.userTokens.delete({ where: { refreshToken } });
+
+    return null;
+  }
 }
