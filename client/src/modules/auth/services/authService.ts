@@ -21,3 +21,17 @@ export const signUpRequest = async (payload: SignUpPayload) => {
 
   return response.data;
 };
+
+export type SignInPayload = {
+  email: string;
+  password: string;
+};
+
+export const signInRequest = async (payload: SignInPayload) => {
+  const response = await axiosClient.post<AuthResponse>(
+    "/auth/signIn",
+    payload,
+  );
+
+  return response.data;
+};
