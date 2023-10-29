@@ -11,6 +11,7 @@ import { PostsService } from "./posts.service";
 import { AccessTokenGuard } from "../auth/guards/accessToken.guard";
 import { CreatePostDTO, PostDTO } from "./dtos/post.dto";
 import { Request } from "express";
+import { CommentDTO, CreateCommentDTO } from "./dtos/comment.dto";
 
 @Controller("posts")
 @UseGuards(AccessTokenGuard)
@@ -28,7 +29,7 @@ export class PostsController {
     const feedPosts = await this.postsService.getFeed(limit, skip);
 
     return {
-      posts: feedPosts.map((post) => new PostDTO(post)),
+      posts: feedPosts.map((post) => new PostDTO(post, post.Comments)),
     };
   }
 
@@ -37,5 +38,18 @@ export class PostsController {
     const newPost = await this.postsService.createPost(req.user, createPostDTO);
 
     return new PostDTO(newPost);
+  }
+
+  @Post("/createComment")
+  async createComment(
+    @Body() createCommentDTO: CreateCommentDTO,
+    @Req() req: Request,
+  ) {
+    const newComment = await this.postsService.createComment(
+      req.user,
+      createCommentDTO,
+    );
+
+    return new CommentDTO(newComment);
   }
 }
