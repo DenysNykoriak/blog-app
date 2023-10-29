@@ -20,6 +20,8 @@ model User {
   updatedAt DateTime @updatedAt
 
   UserTokens UserTokens[]
+  Posts      Post[]
+  Comments   Comment[]
 }
 
 model UserTokens {
@@ -31,4 +33,30 @@ model UserTokens {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model Post {
+  id       String @id @default(cuid())
+  author   User   @relation(fields: [authorId], references: [id])
+  authorId String
+  content  String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  Comments Comment[]
+}
+
+model Comment {
+  id       String @id @default(cuid())
+  author   User   @relation(fields: [authorId], references: [id])
+  authorId String
+  post     Post   @relation(fields: [postId], references: [id])
+  postId   String
+  content  String
+
+  rootComment   Comment? @relation("NestedComments", fields: [rootCommentId], references: [id])
+  rootCommentId String?
+
+  NestedComments Comment[] @relation("NestedComments")
 }
