@@ -1,5 +1,6 @@
 import useSWRMutation from "swr/mutation";
 
+import { useCurrentUser } from "@/modules/user/hooks/useCurrentUser";
 import { handleFetchError } from "@/utils/handleFetchError";
 
 import { AuthLocalStorageKey } from "..";
@@ -12,8 +13,10 @@ import {
 export const useSignUp = (
   handleSuccess?: (response: AuthResponse) => void,
   handleError?: (errors: string[]) => void,
-) =>
-  useSWRMutation(
+) => {
+  const { mutate } = useCurrentUser();
+
+  return useSWRMutation(
     "/signUp",
     (_, { arg }: { arg: SignUpPayload }) => signUpRequest(arg),
     {
@@ -28,8 +31,11 @@ export const useSignUp = (
           response.refreshToken,
         );
 
+        mutate(undefined, { revalidate: true });
+
         handleSuccess?.(response);
       },
       onError: handleFetchError(handleError),
     },
   );
+};

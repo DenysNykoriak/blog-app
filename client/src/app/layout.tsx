@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
+
 import "@/styles/globals.css";
+import Header from "@/components/Header";
 
 export const metadata: Metadata = {
   title: "Blog App",
@@ -9,7 +11,10 @@ export const metadata: Metadata = {
 const RootLayout = ({ children }: React.PropsWithChildren) => {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body>
+        <Header />
+        <div className="flex h-screen flex-col pt-[80px]">{children}</div>
+      </body>
     </html>
   );
 };

@@ -19,7 +19,7 @@ type Props = {
 const Profile: NextPage<Props> = ({ params: { nickname } }) => {
   const router = useRouter();
 
-  const { data: currentUser } = useCurrentUser();
+  const { user: currentUser } = useCurrentUser();
   const { data: user } = useUserByNickname(nickname);
 
   useEffect(() => {
@@ -33,7 +33,7 @@ const Profile: NextPage<Props> = ({ params: { nickname } }) => {
   return (
     <main className="mt-10 flex flex-col gap-8">
       <h1 className="text-center text-3xl">Profile</h1>
-      <div className="mx-auto w-full max-w-[800px] px-2">
+      <div className="mx-auto mb-4 w-full max-w-[800px] px-2">
         <UserProfile user={user} />
       </div>
     </main>

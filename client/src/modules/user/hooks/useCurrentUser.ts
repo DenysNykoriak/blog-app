@@ -2,5 +2,12 @@ import useSWR from "swr";
 
 import { getCurrentUserRequest } from "../services/userService";
 
-export const useCurrentUser = () =>
-  useSWR("/users/current", getCurrentUserRequest);
+export const useCurrentUser = () => {
+  const {
+    isLoading,
+    data: user,
+    mutate,
+  } = useSWR("/users/current", getCurrentUserRequest);
+
+  return { isLoading, user, mutate };
+};

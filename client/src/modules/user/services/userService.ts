@@ -37,3 +37,11 @@ export const editCurrentUserRequest = async (
 
   return response.data;
 };
+
+export const signOutRequest = async (refreshToken: string) => {
+  await axiosClient.get("/auth/signOut", {
+    headers: { "refresh-token": refreshToken },
+  });
+
+  return null;
+};

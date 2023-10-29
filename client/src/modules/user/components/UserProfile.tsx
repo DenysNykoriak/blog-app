@@ -10,6 +10,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import DefaultButton from "@/components/DefaultButton";
 import TransparentInputField from "@/components/TransparentInputField";
 import TransparentTextAreaField from "@/components/TransparentTextAreaField";
+import { useSignOut } from "@/modules/auth/hooks/useSignOut";
 
 import { User } from "..";
 import { useCurrentUserEdit } from "../hooks/useCurrentUserEdit";
@@ -78,7 +79,7 @@ const UserProfile = ({ user, isCurrentUserProfile }: Props) => {
 
   const [isEditMode, setIsEditMode] = useState(false);
 
-  const { isMutating, edit } = useCurrentUserEdit(
+  const { isMutating: isCurrentUserEditMutating, edit } = useCurrentUserEdit(
     (updatedUser) => {
       setIsEditMode(false);
       reset({
@@ -100,6 +101,8 @@ const UserProfile = ({ user, isCurrentUserProfile }: Props) => {
       }
     },
   );
+
+  const { signOut, isMutating: isSignOutMutating } = useSignOut();
 
   const toggleEditMode = () => {
     setIsEditMode((prev) => !prev);
@@ -145,17 +148,29 @@ const UserProfile = ({ user, isCurrentUserProfile }: Props) => {
                     isWide
                     buttonType="submit"
                     color="success"
-                    isDisabled={isMutating}
+                    isDisabled={isCurrentUserEditMutating}
                   >
                     Save
                   </DefaultButton>
                 </div>
               </div>
             ) : (
-              <div className="w-full max-w-[150px]">
-                <DefaultButton isWide onClick={toggleEditMode}>
-                  Edit
-                </DefaultButton>
+              <div className="flex w-full max-w-[300px] gap-2">
+                <div className="w-full">
+                  <DefaultButton isWide onClick={toggleEditMode}>
+                    Edit
+                  </DefaultButton>
+                </div>
+                <div className="w-full">
+                  <DefaultButton
+                    isWide
+                    onClick={signOut}
+                    color="error"
+                    isDisabled={isSignOutMutating}
+                  >
+                    Sign Out
+                  </DefaultButton>
+                </div>
               </div>
             )}
           </>
