@@ -5,6 +5,7 @@ import React, { useEffect } from "react";
 
 import { useRouter } from "next/navigation";
 
+import LoadingPage from "@/components/LoadingPage";
 import { Route } from "@/models/routes";
 import UserProfile from "@/modules/user/components/UserProfile";
 import { useCurrentUser } from "@/modules/user/hooks/useCurrentUser";
@@ -20,7 +21,7 @@ const Profile: NextPage<Props> = ({ params: { nickname } }) => {
   const router = useRouter();
 
   const { user: currentUser } = useCurrentUser();
-  const { data: user } = useUserByNickname(nickname);
+  const { isLoading, data: user } = useUserByNickname(nickname);
 
   useEffect(() => {
     if (currentUser && user && currentUser.id === user.id) {
@@ -28,7 +29,7 @@ const Profile: NextPage<Props> = ({ params: { nickname } }) => {
     }
   }, [currentUser, router, user]);
 
-  if (!user) return null;
+  if (!user || isLoading) return <LoadingPage />;
 
   return (
     <main className="mt-10 flex flex-col gap-8">

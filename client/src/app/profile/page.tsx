@@ -3,13 +3,14 @@
 import { NextPage } from "next";
 import React from "react";
 
+import LoadingPage from "@/components/LoadingPage";
 import UserProfile from "@/modules/user/components/UserProfile";
 import { useCurrentUser } from "@/modules/user/hooks/useCurrentUser";
 
 const Profile: NextPage = () => {
-  const { user } = useCurrentUser();
+  const { isLoading, user } = useCurrentUser();
 
-  if (!user) return null;
+  if (!user || isLoading) return <LoadingPage />;
 
   return (
     <main className="mt-10 flex flex-col gap-8">
