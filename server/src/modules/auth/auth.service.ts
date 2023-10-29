@@ -6,7 +6,6 @@ import { UsersService } from "../users/users.service";
 import { JwtService } from "@nestjs/jwt";
 import { ConfigService } from "@nestjs/config";
 import { SignUpDTO } from "./dtos/signUp.dto";
-import { hash, verify } from "argon2";
 import { SignInDTO } from "./dtos/signIn.dto";
 
 @Injectable()
@@ -98,16 +97,12 @@ export class AuthService {
     if (nicknameCandidate)
       throw new BadRequestException("Nickname already taken");
 
-    const userPassword = await hash(signUpDTO.password);
-
-    const user = await this.prismaService.user.create({
-      data: {
-        email: signUpDTO.email,
-        fname: signUpDTO.fname,
-        lname: signUpDTO.lname,
-        nickname: signUpDTO.nickname,
-        password: userPassword,
-      },
+    const user = await this.usersService.createUser({
+      email: signUpDTO.email,
+      fname: signUpDTO.fname,
+      lname: signUpDTO.lname,
+      nickname: signUpDTO.nickname,
+      password: signUpDTO.password,
     });
 
     const payload = this.createJWTPayload(user);
@@ -128,26 +123,24 @@ export class AuthService {
       throw new BadRequestException("Invalid email or password");
     }
 
-    try {
-      const isPasswordsSame = await verify(
-        emailCandidate.password,
-        signInDTO.password,
+    const isPasswordsSame = await this.usersService.verifyPassword(
+      emailCandidate.password,
+      signInDTO.password,
+    );
+
+    if (isPasswordsSame) {
+      const payload = this.createJWTPayload(emailCandidate);
+
+      const tokens = await this.generateJWTTokens(payload);
+
+      await this.saveJWTTokens(
+        emailCandidate,
+        tokens.accessToken,
+        tokens.refreshToken,
       );
 
-      if (isPasswordsSame) {
-        const payload = this.createJWTPayload(emailCandidate);
-
-        const tokens = await this.generateJWTTokens(payload);
-
-        await this.saveJWTTokens(
-          emailCandidate,
-          tokens.accessToken,
-          tokens.refreshToken,
-        );
-
-        return tokens;
-      }
-    } catch {}
+      return tokens;
+    }
 
     throw new BadRequestException("Invalid email or password");
   }
