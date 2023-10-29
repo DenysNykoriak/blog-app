@@ -69,7 +69,7 @@ export class UsersService {
       );
 
       if (nicknameCandidate)
-        throw new BadRequestException("Email already taken");
+        throw new BadRequestException("Nickname already taken");
     }
 
     const userPassword = editUserDTO.password

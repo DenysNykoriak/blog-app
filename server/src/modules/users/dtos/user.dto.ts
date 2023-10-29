@@ -5,6 +5,7 @@ import {
   IsString,
   Length,
   Matches,
+  MaxLength,
 } from "class-validator";
 
 export class UserDTO {
@@ -61,6 +62,6 @@ export class EditUserDTO {
 
   @IsOptional()
   @IsString()
-  @Length(1, 300)
+  @MaxLength(300)
   bio?: string;
 }
