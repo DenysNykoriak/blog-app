@@ -8,7 +8,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { useRouter } from "next/navigation";
 
 import DefaultButton from "@/components/DefaultButton";
-import DefaultInputField from "@/components/DefaultInputField";
+import DefaultInputField from "@/components/fields/DefaultInputField";
 import { Route } from "@/models/routes";
 
 import { useSignIn } from "../hooks/useSignIn";

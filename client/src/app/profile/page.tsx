@@ -1,16 +1,29 @@
 "use client";
 
 import { NextPage } from "next";
-import React from "react";
+import React, { useEffect } from "react";
 
-import LoadingPage from "@/components/LoadingPage";
+import { useRouter } from "next/navigation";
+
+import LoadingPage from "@/components/pages/LoadingPage";
+import { Route } from "@/models/routes";
 import UserProfile from "@/modules/user/components/UserProfile";
 import { useCurrentUser } from "@/modules/user/hooks/useCurrentUser";
 
 const Profile: NextPage = () => {
+  const router = useRouter();
+
   const { isLoading, user } = useCurrentUser();
 
-  if (!user || isLoading) return <LoadingPage />;
+  useEffect(() => {
+    if (!isLoading && !user) {
+      router.push(Route.SignIn);
+    }
+  }, [isLoading, router, user]);
+
+  if (isLoading) return <LoadingPage />;
+
+  if (!user) return null;
 
   return (
     <main className="mt-10 flex flex-col gap-8">

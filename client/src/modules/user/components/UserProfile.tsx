@@ -8,8 +8,8 @@ import { object, string, InferType } from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 
 import DefaultButton from "@/components/DefaultButton";
-import TransparentInputField from "@/components/TransparentInputField";
-import TransparentTextAreaField from "@/components/TransparentTextAreaField";
+import TransparentInputField from "@/components/fields/TransparentInputField";
+import TransparentTextAreaField from "@/components/fields/TransparentTextAreaField";
 import { useSignOut } from "@/modules/auth/hooks/useSignOut";
 
 import { User } from "..";

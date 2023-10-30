@@ -5,7 +5,8 @@ import React, { useEffect } from "react";
 
 import { useRouter } from "next/navigation";
 
-import LoadingPage from "@/components/LoadingPage";
+import ErrorPage from "@/components/pages/ErrorPage";
+import LoadingPage from "@/components/pages/LoadingPage";
 import { Route } from "@/models/routes";
 import UserProfile from "@/modules/user/components/UserProfile";
 import { useCurrentUser } from "@/modules/user/hooks/useCurrentUser";
@@ -20,7 +21,8 @@ type Props = {
 const Profile: NextPage<Props> = ({ params: { nickname } }) => {
   const router = useRouter();
 
-  const { user: currentUser } = useCurrentUser();
+  const { isLoading: isCurrentUserLoading, user: currentUser } =
+    useCurrentUser();
   const { isLoading, data: user } = useUserByNickname(nickname);
 
   useEffect(() => {
@@ -29,7 +31,9 @@ const Profile: NextPage<Props> = ({ params: { nickname } }) => {
     }
   }, [currentUser, router, user]);
 
-  if (!user || isLoading) return <LoadingPage />;
+  if (isLoading || isCurrentUserLoading) return <LoadingPage />;
+
+  if (!user) return <ErrorPage text="User not found" />;
 
   return (
     <main className="mt-10 flex flex-col gap-8">
