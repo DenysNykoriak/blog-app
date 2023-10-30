@@ -39,6 +39,7 @@ const Home = () => {
         {feed.map((post) => (
           <FeedPost key={post.id} post={post} />
         ))}
+        {/* TODO: add intersection observer */}
         <div className="w-full">
           <DefaultButton
             isWide
