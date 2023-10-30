@@ -15,7 +15,7 @@ export interface Post {
   id: string;
   content: string;
   author: User;
-  comments: Comment[];
+  comments?: Comment[];
   createdAt: string;
   updatedAt: string;
 }

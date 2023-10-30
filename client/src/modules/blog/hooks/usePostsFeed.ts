@@ -10,15 +10,15 @@ export const usePostsFeed = (pageSize = 10) => {
     (index: number, prevPageData?: Post[]) => {
       if (prevPageData && !prevPageData.length) return null;
 
-      return ["/posts/feed", index * pageSize] as const;
+      return ["/posts/feed", index * pageSize, pageSize] as const;
     },
     [pageSize],
   );
 
-  const { isLoading, data, size, setSize } = useSWRInfinite(
+  const { isLoading, data, size, setSize, mutate } = useSWRInfinite(
     getKey,
-    async ([, skip]) => {
-      const response = await getPostsFeedRequest(pageSize, skip);
+    async ([, skip, limit]) => {
+      const response = await getPostsFeedRequest(limit, skip);
 
       return response.posts;
     },
@@ -40,5 +40,15 @@ export const usePostsFeed = (pageSize = 10) => {
     setSize((size) => size + 1);
   };
 
-  return { isLoading, feed, loadMore, isLastPageLoaded };
+  const updateAll = () => {
+    mutate();
+  };
+
+  return {
+    isLoading,
+    feed,
+    isLastPageLoaded,
+    loadMore,
+    updateAll,
+  };
 };

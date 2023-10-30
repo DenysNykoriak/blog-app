@@ -13,9 +13,8 @@ import TransparentTextAreaField from "@/components/fields/TransparentTextAreaFie
 import { useSignOut } from "@/modules/auth/hooks/useSignOut";
 
 import { User } from "..";
+import UserAvatar from "../../../components/UserAvatar";
 import { useCurrentUserEdit } from "../hooks/useCurrentUserEdit";
-
-import UserAvatar from "./UserAvatar";
 
 const profileSchema = object({
   bio: string().optional().max(300, "Bio is too long"),
@@ -119,14 +118,14 @@ const UserProfile = ({ user, isCurrentUserProfile }: Props) => {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
-      <header className="flex items-center justify-between rounded-t-xl bg-primary bg-opacity-[.2] p-4">
+      <div className="flex items-center justify-between rounded-t-xl bg-primary bg-opacity-[.2] p-4">
         <div className="flex items-center gap-4">
-          <UserAvatar fname={user.fname} lname={user.lname} />
+          <UserAvatar user={user} />
           <div>
             <h1 className="text-3xl">
               {user.fname} {user.lname}
             </h1>
-            <span className=" text-base-content">@{user.nickname}</span>
+            <span className="text-base-content">@{user.nickname}</span>
           </div>
         </div>
         {isCurrentUserProfile && (
@@ -175,7 +174,7 @@ const UserProfile = ({ user, isCurrentUserProfile }: Props) => {
             )}
           </>
         )}
-      </header>
+      </div>
       <div className="flex flex-col gap-3 rounded-b-xl bg-white bg-opacity-[.05] p-4">
         <div>
           <h3 className="text-xl text-primary">Bio</h3>
