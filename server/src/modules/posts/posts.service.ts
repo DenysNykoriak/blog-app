@@ -28,6 +28,9 @@ export class PostsService {
       include: {
         author: true,
         Comments: {
+          where: {
+            rootCommentId: null,
+          },
           include: {
             author: true,
             NestedComments: { include: { author: true } },
