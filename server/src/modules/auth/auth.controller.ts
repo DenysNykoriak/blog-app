@@ -3,6 +3,7 @@ import {
   Controller,
   Get,
   Headers,
+  HttpCode,
   Post,
   Req,
   UseGuards,
@@ -40,6 +41,7 @@ export class AuthController {
 
   @UseGuards(RefreshTokenGuard)
   @Post("/refreshToken")
+  @HttpCode(200)
   async refreshToken(
     @Req() req: Request,
     @Headers("refresh-token") refreshToken: string,
