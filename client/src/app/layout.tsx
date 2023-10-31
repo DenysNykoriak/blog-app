@@ -8,15 +8,13 @@ export const metadata: Metadata = {
   description: "Created by Denys Nykoriak",
 };
 
-const RootLayout = ({ children }: React.PropsWithChildren) => {
-  return (
-    <html lang="en">
-      <body>
-        <Header />
-        <div className="flex h-screen flex-col pt-[80px]">{children}</div>
-      </body>
-    </html>
-  );
-};
+const RootLayout = ({ children }: React.PropsWithChildren) => (
+  <html lang="en">
+    <body>
+      <Header />
+      <div className="flex h-screen flex-col pt-[80px]">{children}</div>
+    </body>
+  </html>
+);
 
 export default RootLayout;

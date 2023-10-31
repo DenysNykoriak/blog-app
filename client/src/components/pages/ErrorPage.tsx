@@ -5,9 +5,9 @@ type Props = {
 };
 
 const ErrorPage = ({ text }: Props) => (
-  <div className="flex w-screen flex-1 items-center justify-center">
+  <main className="flex w-screen flex-1 items-center justify-center">
     <h1 className="text-3xl">{text}</h1>
-  </div>
+  </main>
 );
 
 export default ErrorPage;
