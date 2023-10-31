@@ -1,7 +1,8 @@
 import axios, { AxiosError, AxiosRequestConfig } from "axios";
 
-import { PROTECTED_ROUTES, Route } from "@/models/routes";
+import { Route } from "@/models/routes";
 import { AuthLocalStorageKey } from "@/modules/auth";
+import { checkIsPathnameProtectedRoute } from "@/utils/checkIsPathnameProtectedRoute";
 
 export const axiosClient = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL,
@@ -29,7 +30,13 @@ axiosClient.interceptors.response.use(
 
     const refreshToken = localStorage.getItem(AuthLocalStorageKey.RefreshToken);
 
-    if (!refreshToken) return err;
+    if (!refreshToken) {
+      if (checkIsPathnameProtectedRoute(window.location.pathname)) {
+        window.location.href = Route.SignIn;
+      }
+
+      return err;
+    }
 
     const originalConfig = err.config;
 
@@ -56,13 +63,7 @@ axiosClient.interceptors.response.use(
           localStorage.removeItem(AuthLocalStorageKey.AccessToken);
           localStorage.removeItem(AuthLocalStorageKey.RefreshToken);
 
-          if (
-            PROTECTED_ROUTES.some((route) =>
-              typeof route === "string"
-                ? route === window.location.pathname
-                : route.test(window.location.pathname),
-            )
-          ) {
+          if (checkIsPathnameProtectedRoute(window.location.pathname)) {
             window.location.href = Route.SignIn;
           }
         }

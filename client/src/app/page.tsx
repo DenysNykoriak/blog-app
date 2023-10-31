@@ -1,10 +1,10 @@
 "use client";
 
 import { useEffect } from "react";
+import { useInView } from "react-intersection-observer";
 
 import { useRouter } from "next/navigation";
 
-import DefaultButton from "@/components/DefaultButton";
 import LoadingPage from "@/components/pages/LoadingPage";
 import { Route } from "@/models/routes";
 import CreatePostForm from "@/modules/blog/components/CreatePostForm";
@@ -23,6 +23,14 @@ const Home = () => {
     loadMore,
   } = usePostsFeed(10);
 
+  const { ref: loadMoreRef } = useInView({
+    onChange: (inView) => {
+      if (inView && !isLastPageLoaded) {
+        loadMore();
+      }
+    },
+  });
+
   useEffect(() => {
     if (!isLoading && !user) {
       router.push(Route.SignIn);
@@ -32,23 +40,14 @@ const Home = () => {
   if (isLoading || isPostsFeedLoading) return <LoadingPage />;
 
   return (
-    <main className="mt-10 flex flex-col gap-8">
+    <main className="relative mt-10 flex flex-col gap-8">
       <h1 className="text-center text-3xl">Blog Page</h1>
       <div className="mx-auto mb-4 flex w-full max-w-[800px] flex-col gap-4 px-2">
         <CreatePostForm />
         {feed.map((post) => (
           <FeedPost key={post.id} post={post} />
         ))}
-        {/* TODO: add intersection observer */}
-        <div className="w-full">
-          <DefaultButton
-            isWide
-            onClick={loadMore}
-            isDisabled={isLastPageLoaded}
-          >
-            Load More
-          </DefaultButton>
-        </div>
+        <div className="absolute bottom-[600px]" ref={loadMoreRef} />
       </div>
     </main>
   );
