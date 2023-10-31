@@ -1,5 +1,6 @@
-import axios from "axios";
+import axios, { AxiosError, AxiosRequestConfig } from "axios";
 
+import { PROTECTED_ROUTES, Route } from "@/models/routes";
 import { AuthLocalStorageKey } from "@/modules/auth";
 
 export const axiosClient = axios.create({
@@ -21,11 +22,53 @@ axiosClient.interceptors.request.use((req) => {
   return req;
 });
 
-axiosClient.interceptors.response.use((res) => {
-  if (typeof window === "undefined") return res;
+axiosClient.interceptors.response.use(
+  (res) => res,
+  async (err) => {
+    if (typeof window === "undefined") return err;
 
-  // TODO: update response interceptor
-  console.log(res.status);
+    const refreshToken = localStorage.getItem(AuthLocalStorageKey.RefreshToken);
 
-  return res;
-});
+    if (!refreshToken) return err;
+
+    const originalConfig = err.config;
+
+    if (err.response.status === 401 && !originalConfig._retry) {
+      try {
+        const response = await axiosClient.post<{ accessToken: string }>(
+          "/auth/refreshToken",
+          undefined,
+          {
+            headers: {
+              "refresh-token": refreshToken,
+            },
+            _retry: true,
+          } as AxiosRequestConfig,
+        );
+
+        const newAccessToken = response.data.accessToken;
+
+        localStorage.setItem(AuthLocalStorageKey.AccessToken, newAccessToken);
+
+        return axiosClient(originalConfig);
+      } catch (refreshErr) {
+        if (refreshErr instanceof AxiosError && refreshErr.status === 401) {
+          localStorage.removeItem(AuthLocalStorageKey.AccessToken);
+          localStorage.removeItem(AuthLocalStorageKey.RefreshToken);
+
+          if (
+            PROTECTED_ROUTES.some((route) =>
+              typeof route === "string"
+                ? route === window.location.pathname
+                : route.test(window.location.pathname),
+            )
+          ) {
+            window.location.href = Route.SignIn;
+          }
+        }
+      }
+    }
+
+    return err;
+  },
+);
